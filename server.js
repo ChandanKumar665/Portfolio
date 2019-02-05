@@ -54,6 +54,7 @@ app.post('/api/login',function(req,res){
 				session_obj.fname = result.fname
 				session_obj.email_id = result.email_id
 				session_obj.is_superadmin = result.is_superadmin
+				session_obj.user_id = result._id
 				is_loggedin = true
 				db.close();
 				res.redirect("../views/profile/profile.html")
@@ -77,19 +78,23 @@ app.get('/api/joblist',function(req,res){
 	if(req.session){
 		if(req.session.is_superadmin){
 			//means admin login
-			MongoClient.connect(url,function(err,db){
+			MongoClient.connect(url,{useNewUrlParser:true},function(err,db){
 				if(err){
 					throw err
 				}
 				var dbo = db.db('portfolio')
 				dbo.collection('job').find().toArray(function(err,result){
-
+					if(err)
+						throw err
+					db.close()
+					res.json(result)
 				})
 			})
 		}else if(!req.session.is_superadmin && req.session.is_employer){
 			//measn emplyoer login
+				db.close()
 		}else if(!req.session.is_superadmin && req.session.is_employee){
-
+				db.close()
 		}
 	}else{
 		res.json({})
@@ -107,24 +112,34 @@ app.post('/api/logout',function(req,res){
 })
 
 app.post('/api/postjob',function(req,res){
-	var job = req.body
-	// console.log(job)
-	console.log(job.jd.trim())
-	job.jd = job.jd.trim()
+	if(req.session == null){
+		res.end('please login first')
+	}
+	if(req.body.job_title == '' || req.body.jd == '' || req.body.dept == ''){
+		res.redirect('/views/profile/jobpost.html')
+	}
+	var job = {'job_title':req.body.job_title,
+				'dept':req.body.dept,
+				'job_description':req.body.jd.trim(),
+				'posted_by':req.session.user_id,
+				'create_time':new Date(),
+				'updated_by':req.session.user_id
+				}
 	if(job != null){
-		MongoClient.connect(url,function(err,db){
+		MongoClient.connect(url,{useNewUrlParser:true},function(err,db){
 			if(err)
 				throw err
 			var dbo = db.db('portfolio')
 			dbo.collection('job').insertOne(job,function(err,result){
 				if(err)
 					throw err
-				if(result!=null){
-					res.redirect('./profile.html')
+				if(result != null){
+					db.close()
+					res.redirect('/views/profile/profile.html')
 				}
 			})
 		})
-	}else{
+	} else {
 		res.redirect('./jobpost.html')
 	}
 })
