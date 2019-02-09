@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
-
+var mongoose = require('mongoose')
 var MongoClient = require('mongodb').MongoClient
 var url = "mongodb://localhost:27017/"
 var is_loggedin = false
@@ -57,7 +57,7 @@ app.post('/api/login',function(req,res){
 				session_obj.user_id = result._id
 				is_loggedin = true
 				db.close();
-				res.redirect("../views/profile/profile.html")
+				res.redirect("/views/profile/profile.html")
 			}else{
 				db.close()
 				res.end('Oops! Wrong credentials.')
@@ -70,7 +70,7 @@ app.get('/api/user',function(req,res){
 	if(req.session){
 		res.json(req.session)
 	}else{
-		res.json({})
+		res.redirect('/')
 	}
 })
 
@@ -83,7 +83,16 @@ app.get('/api/joblist',function(req,res){
 					throw err
 				}
 				var dbo = db.db('portfolio')
-				dbo.collection('job').find().toArray(function(err,result){
+				var join = {
+							$lookup:
+								{
+									from:'users',
+									localField:'posted_by',
+									foreignField:'_id',
+									as:'user_details'	
+								}
+							}
+				dbo.collection('job').aggregate([join]).sort({'create_time':-1}).toArray(function(err,result){
 					if(err)
 						throw err
 					db.close()
@@ -106,7 +115,7 @@ app.post('/api/logout',function(req,res){
 		if(err){
 			throw err
 		}else{
-			res.redirect('/views/index.html')
+			res.redirect('/')
 		}
 	})
 })
@@ -116,15 +125,17 @@ app.post('/api/postjob',function(req,res){
 		res.end('please login first')
 	}
 	if(req.body.job_title == '' || req.body.jd == '' || req.body.dept == ''){
-		res.redirect('/views/profile/jobpost.html')
+		console.log('all are empty')
+		res.render('/views/profile/jobpost.html',{'msg':'empty values sent'})
 	}
-	var job = {'job_title':req.body.job_title,
+	var job = {
+				'job_title':req.body.job_title,
 				'dept':req.body.dept,
 				'job_description':req.body.jd.trim(),
-				'posted_by':req.session.user_id,
+				'posted_by':mongoose.Types.ObjectId(req.session.user_id),
 				'create_time':new Date(),
 				'updated_by':req.session.user_id
-				}
+			   }
 	if(job != null){
 		MongoClient.connect(url,{useNewUrlParser:true},function(err,db){
 			if(err)
@@ -142,4 +153,32 @@ app.post('/api/postjob',function(req,res){
 	} else {
 		res.redirect('./jobpost.html')
 	}
+})
+
+app.get('/api/delete/:id',function(req,res){
+	if(req.session==null){
+		res.redirect('/views/index.html')
+	}
+	if(req.params.id != '' || req.params.id != null){
+		MongoClient.connect(url,{useNewUrlParser:true},function(err,db){
+			if(err)
+				throw err
+			var dbo = db.db('portfolio')
+			var del_obj = {'_id':mongoose.Types.ObjectId(req.params.id)}
+			dbo.collection('job').deleteOne(del_obj,function(err,result){
+				if(err)
+					throw err
+				if(result != null){
+					console.log('one doc deleted')
+					db.close()
+					res.json({'msg':1})
+				}
+			})
+		})
+	}
+	else{
+		db.close()
+		res.redirect('/views/profile/profile.html')
+	}
+	
 })
