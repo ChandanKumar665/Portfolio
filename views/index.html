@@ -16,8 +16,12 @@
 		<h3>Portfolio</h3>
 		<hr>
 		<section>
+			<div class="alert alert-danger alert-dismissible" style="display: none;" id="msg_div">
+			  	<button type="button" class="close" data-dismiss="alert">&times;</button>
+			  	<strong id="msg"></strong>
+			</div>
 			<div class="card loginform">
-				<form method="post" action="/api/login" class="text-center border border-light p-5">
+				<form method="post" class="text-center border border-light p-5" id="loginform">
 				    <p class="h4 mb-4">Sign in</p>
 				    <!-- Email -->
 				    <input type="text" name="username" id='Username' class="form-control mb-4" placeholder="Username">
@@ -27,8 +31,8 @@
 				        <div>
 				            <!-- Remember me -->
 				            <div class="custom-control custom-checkbox">
-				                <input type="checkbox" class="custom-control-input" id="defaultLoginFormRemember">
-				                <label class="custom-control-label" for="defaultLoginFormRemember">Remember me</label>
+				                <input type="checkbox" class="custom-control-input" name="remember_me" id="FormRemember">
+				                <label class="custom-control-label" for="FormRemember">Remember me</label>
 				            </div>
 				        </div>
 				        <div>
@@ -61,6 +65,7 @@
 				<!-- Default form login -->	
 			</div>			
 		</section>
-	<div>	
+	<div>
+	<script type="text/javascript" src="/public/js/index.js"></script>	
 </body>
 </html>

@@ -19,6 +19,14 @@ app.use(express.static(__dirname + '/'));
 
 app.set('view engine', 'html');
 app.set('views', __dirname);
+
+var flash = require('connect-flash')
+app.use(flash())
+// app.use(function(req, res, next) {
+//     res.locals.messages = req.flash();
+//     next();
+// });
+
 app.listen(port)
 console.log('server satarted runnig at '+port)
 
@@ -36,7 +44,7 @@ app.get('/',function(req,res){
 
 app.post('/api/login',function(req,res){
 	let emp = req.body
-	var user=''
+	// console.log(req.body)
 	MongoClient.connect(url,{useNewUrlParser:true},function(err,db){
 		if(err){
 			throw err
@@ -54,13 +62,16 @@ app.post('/api/login',function(req,res){
 				session_obj.fname = result.fname
 				session_obj.email_id = result.email_id
 				session_obj.is_superadmin = result.is_superadmin
+				session_obj.is_superadmin = result.is_superadmin
+				session_obj.is_employer = result.is_employer
+				session_obj.is_employee = result.is_employee
 				session_obj.user_id = result._id
 				is_loggedin = true
 				db.close();
-				res.redirect("/views/profile/profile.html")
+				res.json({'msg':1})
 			}else{
 				db.close()
-				res.end('Oops! Wrong credentials.')
+				res.json({'msg':'Oops!wrong credentials.'})
 			}
 		})
 	})
@@ -76,8 +87,7 @@ app.get('/api/user',function(req,res){
 
 app.get('/api/joblist',function(req,res){
 	if(req.session){
-		if(req.session.is_superadmin){
-			//means admin login
+			//means user logged in
 			MongoClient.connect(url,{useNewUrlParser:true},function(err,db){
 				if(err){
 					throw err
@@ -99,14 +109,8 @@ app.get('/api/joblist',function(req,res){
 					res.json(result)
 				})
 			})
-		}else if(!req.session.is_superadmin && req.session.is_employer){
-			//measn emplyoer login
-				db.close()
-		}else if(!req.session.is_superadmin && req.session.is_employee){
-				db.close()
-		}
 	}else{
-		res.json({})
+		res.json({'msg':'please login to continue.'})
 	}
 })
 
@@ -152,6 +156,35 @@ app.post('/api/postjob',function(req,res){
 		})
 	} else {
 		res.redirect('./jobpost.html')
+	}
+})
+
+app.post('/api/update',function(req,res){
+	if(req.session==null){
+		res.redirect('/views/index.html')
+	}
+	console.log(req.body)
+	if(req.body != '' || req.body != null){
+		MongoClient.connect(url,{useNewUrlParser:true},function(err,db){
+			if(err)
+				throw err
+			var dbo = db.db('portfolio')
+			var update_obj = {'_id':mongoose.Types.ObjectId(req.body.hidden_id)}
+			var new_values = {$set:{'job_title':req.body.job_title,'dept':req.body.dept,'job_description':req.body.jd,'updated_time':new Date()}}
+			dbo.collection('job').updateOne(update_obj,new_values,function(err,result){
+				if(err)
+					throw err
+				if(result != null){
+					console.log('one doc updated')
+					db.close()
+					res.redirect('/views/profile/profile.html')
+				}
+			})
+		})
+	}
+	else {
+		db.close()
+		res.redirect('/views/profile/profile.html')
 	}
 })
 

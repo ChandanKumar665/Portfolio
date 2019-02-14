@@ -32,36 +32,38 @@
 						          <span aria-hidden="true">&times;</span>
 						        </button>
 						    </div>
-					      	<div class="modal-body mx-3">
-					        	<div class="md-form mb-5">
-							        <!--<i class="fas fa-user prefix grey-text"></i>-->
-							        <label data-error="wrong" data-success="right" for="edit_job_title">Job Title:</label>
-							        <input type="text" id="edit_job_title" class="form-control" required>
-							        
-						        </div>
+						    <form method="post" action="/api/update">
+						      	<div class="modal-body mx-3">
+						        	<div class="md-form mb-5">
+								        <!--<i class="fas fa-user prefix grey-text"></i>-->
+								        <label data-error="wrong" data-success="right" for="edit_job_title">Job Title:</label>
+								        <input type="text" id="edit_job_title" name="job_title" class="form-control" required>
+							        </div>
 
-						        <div class="md-form mb-5">
-							        <!--<i class="fas fa-envelope prefix grey-text"></i>-->
-							        <label data-error="wrong" data-success="right" for="form29">Department</label>
-							        <input type="text" id="edit_department" class="form-control" required>
-						        </div>
-						        <!--
-						        <div class="md-form mb-5">
-						          	<i class="fas fa-tag prefix grey-text"></i>
-						          	<input type="text" id="form32" class="form-control validate">
-						          	<label data-error="wrong" data-success="right" for="form32">Description</label>
-						        </div>
-								-->
-						        <div class="md-form">
-						          	<!-- <i class="fas fa-pencil prefix grey-text"></i> -->
-						          	<label data-error="wrong" data-success="right" for="edit_department">Description</label>
-						          	<textarea type="text" id="edit_description" class="md-textarea form-control" rows="4" required></textarea>						          	
-						        </div>
-					     	</div>
-					    <div class="modal-footer d-flex justify-content">
-					        <button class="btn btn-unique">Update <i class="fas fa-paper-plane-o ml-1"></i></button>
-					        <button class="btn btn-unique" data-dismiss="modal">Cancel <i class="fas fa-paper-plane-o ml-1"></i></button>
-					    </div>
+							        <div class="md-form mb-5">
+								        <!--<i class="fas fa-envelope prefix grey-text"></i>-->
+								        <label data-error="wrong" data-success="right" for="form29">Department</label>
+								        <input type="text" id="edit_department" name="dept" class="form-control" required>
+							        </div>
+							        <!--
+							        <div class="md-form mb-5">
+							          	<i class="fas fa-tag prefix grey-text"></i>
+							          	<input type="text" id="form32" class="form-control validate">
+							          	<label data-error="wrong" data-success="right" for="form32">Description</label>
+							        </div>
+									-->
+							        <div class="md-form">
+							          	<!-- <i class="fas fa-pencil prefix grey-text"></i> -->
+							          	<label data-error="wrong" data-success="right" for="edit_department">Description</label>
+							          	<textarea type="text" id="edit_description" name="jd" class="md-textarea form-control" rows="4" required></textarea>						          	
+							        </div>
+						     	</div>
+						    	<div class="modal-footer d-flex justify-content">
+							        <button class="btn btn-unique">Update <i class="fas fa-paper-plane-o ml-1"></i></button>
+							        <button class="btn btn-unique" data-dismiss="modal">Cancel <i class="fas fa-paper-plane-o ml-1"></i></button>
+						    	</div>
+						    	<input type="text" hidden name="hidden_id" id="hidden_id">
+						    </form>
 					    </div>
 					  </div>
 					</div>
@@ -91,12 +93,12 @@
 				</div>
 			</div>
 			<div class="row" style="padding: 1rem;">
-				<div class="col-md-2 col-lg-2 col-xl-2">
+				<div class="col-md-2 col-lg-2 col-xl-2" id="btn_jobpost">
 					<div class="md-form">
 						<a type="" href='./jobpost.html' class="btn btn-info">Post A Job</a>
 					</div>
 				</div>
-				<div class="col-md-2 col-lg-2 col-xl-2">
+				<div class="col-md-2 col-lg-2 col-xl-2" id="btn_adduser">
 					<div class="md-form">
 						<a type="" href='./adduser.html' class="btn btn-info">+ Add User</a>
 					</div>
@@ -110,6 +112,6 @@
 				</div>
 			</div>
 		</div>
-	<script type="text/javascript" src="/public/js/profile.js"></script>
+	<script type="text/javascript" src="/public/js/profile/profile.js"></script>
 </body>
 </html>
