@@ -1,13 +1,19 @@
 var login_res = {}
+
 $.get('/api/user',function(data){
-	console.log(data)
+	// console.log(data)
+	if(data.status_code == -2){
+		// console.log('getting -2')
+		window.location.href = '/views/index.html';
+	}
 	login_res = data
 	$('#name').text(data.fname)
 })
 var hidden_inputs=[]
 $.get('/api/joblist',function(data){
 	var result_div = ''
-	console.log(data)
+	// console.log(data)
+
 	if(!login_res.is_superadmin){
 		$('#btn_adduser').hide()
 	}
@@ -92,4 +98,19 @@ $('#delete').click(function(){
 			window.location.href = '/views/profile/profile.html';
 		}
 	})
+})
+
+$('#btn_logout').submit(function(e){
+	e.preventDefault()
+	$.post('/api/logout',function(data){
+		console.log(data)
+		if(data.status_code == -2){
+			//logout successfully
+			window.location.href = '/views/index.html';
+		} else {
+			$('#msg').text(data.msg)
+			$('#msg_div').show()
+		}
+	})
+
 })
