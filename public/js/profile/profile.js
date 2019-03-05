@@ -3,7 +3,6 @@ var login_res = {}
 $.get('/api/user',function(data){
 	// console.log(data)
 	if(data.status_code == -2){
-		// console.log('getting -2')
 		window.location.href = '/views/index.html';
 	}
 	login_res = data

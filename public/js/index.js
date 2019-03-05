@@ -1,4 +1,12 @@
 
+//if user is already logged in
+$.get('/',function(data){
+    // console.log(data)
+    if(data.status_code == 2){
+		window.location.href = '/views/profile/profile.html'
+	}
+})
+
 $('#loginform').submit(function(e) {
 	e.preventDefault()
 	console.log('hey form is submited')
@@ -10,7 +18,7 @@ $('#loginform').submit(function(e) {
 	var login_obj = {'username':res.username,'password':res.password}
 	$.post('/api/login',login_obj,function(data){
 		console.log(data)
-		if(data.msg == 1){
+		if(data.status_code == 2){
 			//login success
 			window.location.href = '/views/profile/profile.html';
 		} else {

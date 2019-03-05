@@ -27,14 +27,12 @@ console.log('server satarted runnig at '+port)
 
 
 app.get(['/','/views/index.html',''],function(req,res){
-	console.log(req.session.is_loggedin)
-	console.log(req.session)
+	// console.log(req.session.is_loggedin)
+	// console.log(req.session)
 	if(req.session && req.session.is_loggedin){
-		console.log('inside')
-		res.redirect('/views/profile/profile.html');
+		res.json({'msg':'login success','status_code':2})
 	}else{
-		console.log('out')
-		res.redirect('/views/index.html');
+		res.json({'msg':'login failed','status_code':-2})
 	}
 })
 
@@ -139,7 +137,7 @@ app.post('/api/postjob',function(req,res){
 	}
 	else if(req.body.job_title == '' || req.body.jd == '' || req.body.dept == ''){
 		// console.log('all are empty')
-		res.json({'msg':'empty values sent','status_code':-9})
+		res.json({'msg':'empty values sent','status_code':-9}).end()
 	}
 	var job = {
 				'job_title':req.body.job_title,
@@ -152,14 +150,15 @@ app.post('/api/postjob',function(req,res){
 	if(job != null){
 		MongoClient.connect(url,{useNewUrlParser:true},function(err,db){
 			if(err)
-				throw err
+				res.json({'msg':err,'staus_code':-20}).end()
 			var dbo = db.db('portfolio')
 			dbo.collection('job').insertOne(job,function(err,result){
 				if(err)
 					throw err
 				if(result != null){
 					db.close()
-					res.redirect('/views/profile/profile.html')
+					// res.redirect('/views/profile/profile.html')
+					res.json({'msg':'Data inserted successfully','status_code':1}).end()
 				}
 			})
 		})
